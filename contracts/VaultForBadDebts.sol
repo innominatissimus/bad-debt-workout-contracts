@@ -64,9 +64,9 @@ contract VaultForBadDebts is ERC4626, Ownable
 				}
 				else
 				{
-					pool.withdraw(reserves[i], uint256(-values[i]), address(this));
-					IERC20(reserves[i]).safeIncreaseAllowance(address(badDebtPool), uint256(-values[i]));
-					badDebtPool.repay(reserves[i], uint256(-values[i]), 2, address(this));
+					uint256 withdrawn = pool.withdraw(reserves[i], uint256(-values[i]), address(this));
+					IERC20(reserves[i]).safeIncreaseAllowance(address(badDebtPool), withdrawn);
+					badDebtPool.repay(reserves[i], withdrawn, 2, address(this));
 				}
 			}
 		}
@@ -79,16 +79,47 @@ contract VaultForBadDebts is ERC4626, Ownable
 		IPool pool = IPool(poolAddressesProvider.getPool());
 		IPool badDebtPool = IPool(badDebtPoolAddressesProvider.getPool());
 
+		
 		for (uint256 i = 0; i < values.length; i++)
 		{
 			if (values[i] != 0)
 			{
-				pool.withdraw(reserves[i], uint256(values[i]), address(this));
-				IERC20(reserves[i]).safeIncreaseAllowance(address(universalRouter), uint256(values[i]));
-				// TODO: Add swap logic
+				// Withdraw tokens from Aave pool
+				uint256 withdrawn = pool.withdraw(reserves[i], uint256(values[i]), address(this));
+				
+				// Create path: reserves[i] -> (0.3% fee) -> underlyingAssetOfAToken
+				bytes memory path = abi.encodePacked(
+					reserves[i],           // tokenIn
+					uint24(3000),         // 0.3% fee (3000 = 0.3%)
+					address(underlyingAssetOfAToken)  // tokenOut
+				);
+				
+				// Prepare Universal Router command
+				bytes memory commands = abi.encodePacked(uint8(0x80)); // V3_SWAP_EXACT_IN and f == 1
+				
+				// Prepare input parameters for V3_SWAP_EXACT_IN
+				bytes[] memory inputs = new bytes[](1);
+				inputs[0] = abi.encode(
+					address(this),	// recipient
+					withdrawn,		// amountIn
+					0,				// amountOutMinimum (0 for simplicity, should set proper slippage)
+					path,			// path
+					true			// payer
+				);
+				
+				// Approve Universal Router to spend tokens
+				IERC20(reserves[i]).safeIncreaseAllowance(address(universalRouter), withdrawn);
+				
+				// Execute swap through Universal Router
+				universalRouter.execute(
+					commands,
+					inputs,
+					block.timestamp
+				);
 			}
 		}
 
+		// Supply all received underlyingAssetOfAToken to bad debt pool
 		uint256 balance = underlyingAssetOfAToken.balanceOf(address(this));
 		underlyingAssetOfAToken.safeDecreaseAllowance(address(badDebtPool), balance);
 		badDebtPool.supply(address(underlyingAssetOfAToken), balance, address(this), 0);
