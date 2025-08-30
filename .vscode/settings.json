@@ -1,0 +1,8 @@
+{
+	"wake.compiler.solc.remappings": [
+		"@kei-fi-aave-v3-origin-1.0.0/=dependencies/@kei-fi-aave-v3-origin-1.0.0/",
+		"@openzeppelin-contracts-5.4.0/=dependencies/@openzeppelin-contracts-5.4.0/",
+		"@uniswap-universal-router-2.0.0/=dependencies/@uniswap-universal-router-2.0.0/",
+		"forge-std-1.10.0/=dependencies/forge-std-1.10.0/"
+	]
+}

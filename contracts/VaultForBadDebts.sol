@@ -7,6 +7,7 @@ import "@openzeppelin-contracts-5.4.0/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin-contracts-5.4.0/access/Ownable.sol";
 import "@kei-fi-aave-v3-origin-1.0.0/core/contracts/interfaces/IPoolAddressesProvider.sol";
 import "@kei-fi-aave-v3-origin-1.0.0/core/contracts/interfaces/IPool.sol";
+import "@uniswap-universal-router-2.0.0/contracts/interfaces/IUniversalRouter.sol";
 
 contract VaultForBadDebts is ERC4626, Ownable
 {	
@@ -14,6 +15,9 @@ contract VaultForBadDebts is ERC4626, Ownable
 	
 	IPoolAddressesProvider public badDebtPoolAddressesProvider;
 	IPoolAddressesProvider public poolAddressesProvider;
+	IUniversalRouter public universalRouter;
+
+	IERC20 public underlyingAssetOfAToken;
 
 	address[] public reserves;
 
@@ -22,10 +26,15 @@ contract VaultForBadDebts is ERC4626, Ownable
 		
 	}
 
-	function init(address _badDebtPoolAddressesProvider, address _poolAddressesProvider) external onlyOwner
+	function init(address _badDebtPoolAddressesProvider,
+		address _poolAddressesProvider, 
+		address _universalRouter,
+		address _underlyingAssetOfAToken) external onlyOwner
 	{
 		badDebtPoolAddressesProvider = IPoolAddressesProvider(_badDebtPoolAddressesProvider);
 		poolAddressesProvider = IPoolAddressesProvider(_poolAddressesProvider);
+		universalRouter = IUniversalRouter(_universalRouter);
+		underlyingAssetOfAToken = IERC20(_underlyingAssetOfAToken);
 	}
 
 	function addReserve(address[] calldata _reserves) external onlyOwner
@@ -68,13 +77,20 @@ contract VaultForBadDebts is ERC4626, Ownable
 		require(values.length == reserves.length, "Invalid values length");
 
 		IPool pool = IPool(poolAddressesProvider.getPool());
+		IPool badDebtPool = IPool(badDebtPoolAddressesProvider.getPool());
 
 		for (uint256 i = 0; i < values.length; i++)
 		{
 			if (values[i] != 0)
 			{
 				pool.withdraw(reserves[i], uint256(values[i]), address(this));
+				IERC20(reserves[i]).safeIncreaseAllowance(address(universalRouter), uint256(values[i]));
+				// TODO: Add swap logic
 			}
 		}
+
+		uint256 balance = underlyingAssetOfAToken.balanceOf(address(this));
+		underlyingAssetOfAToken.safeDecreaseAllowance(address(badDebtPool), balance);
+		badDebtPool.supply(address(underlyingAssetOfAToken), balance, address(this), 0);
 	}
 }
