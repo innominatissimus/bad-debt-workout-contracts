@@ -1,5 +1,5 @@
 [compiler.solc]
-exclude_paths = ["script", "lib", "test", "venv", ".venv", "node_modules"]
+exclude_paths = ["script", "dependencies", "test", "venv", ".venv", "node_modules"]
 include_paths = ["node_modules"]
 
 [compiler.solc.optimizer]
@@ -9,7 +9,7 @@ runs = 200
 [detectors]
 exclude = []
 ignore_paths = ["venv", "test", ".venv"]
-exclude_paths = ["script", "lib", "test", "venv", ".venv", "node_modules"]
+exclude_paths = ["script", "dependencies", "test", "venv", ".venv", "node_modules"]
 
 [testing]
 cmd = "anvil"
