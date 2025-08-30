@@ -1,0 +1,2 @@
+eth-brownie==1.21.0
+eth-wake==4.20.1
