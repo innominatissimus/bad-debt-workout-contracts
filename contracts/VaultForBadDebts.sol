@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.29;
 
-import "@openzeppelin-contracts-5.4.0/token/ERC20/extensions/ERC4626.sol";
-import "@openzeppelin-contracts-5.4.0/token/ERC20/IERC20.sol";
-import "@openzeppelin-contracts-5.4.0/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin-contracts-5.4.0/access/Ownable.sol";
-import "@kei-fi-aave-v3-origin-1.0.0/core/contracts/interfaces/IPoolAddressesProvider.sol";
-import "@kei-fi-aave-v3-origin-1.0.0/core/contracts/interfaces/IPool.sol";
-import "@uniswap-universal-router-2.0.0/contracts/interfaces/IUniversalRouter.sol";
+import {ERC4626} from "@openzeppelin-contracts-5.4.0/token/ERC20/extensions/ERC4626.sol";
+import {ERC20} from "@openzeppelin-contracts-5.4.0/token/ERC20/ERC20.sol";
+import {IERC20} from "@openzeppelin-contracts-5.4.0/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin-contracts-5.4.0/token/ERC20/utils/SafeERC20.sol";
+import {Ownable} from "@openzeppelin-contracts-5.4.0/access/Ownable.sol";
+import {IPoolAddressesProvider} from "@kei-fi-aave-v3-origin-1.0.0/core/contracts/interfaces/IPoolAddressesProvider.sol";
+import {IPool} from "@kei-fi-aave-v3-origin-1.0.0/core/contracts/interfaces/IPool.sol";
+import {IUniversalRouter} from "@uniswap-universal-router-2.0.0/contracts/interfaces/IUniversalRouter.sol";
 
 contract VaultForBadDebts is ERC4626, Ownable
 {	
