@@ -208,3 +208,8 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+.wake
+pytypes
+*.py[cod]
+wake-coverage.cov
