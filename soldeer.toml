@@ -1,3 +1,4 @@
 [dependencies]
 forge-std = "1.10.0"
 "@openzeppelin-contracts" = "5.4.0"
+"@kei-fi-aave-v3-origin" = "1.0.0"

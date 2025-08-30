@@ -1,4 +1,11 @@
 [[dependencies]]
+name = "@kei-fi-aave-v3-origin"
+version = "1.0.0"
+url = "https://soldeer-revisions.s3.amazonaws.com/@kei-fi-aave-v3-origin/1_0_0_28-11-2024_00:54:13_src.zip"
+checksum = "210fad50bb5d3774cc46a2fb88917819bc0119c075bd143ebdf497141ddcc98c"
+integrity = "15b81781b2500fe4f560a3b35ba57004ff6786e3af9d814f49f98a8185eaa781"
+
+[[dependencies]]
 name = "@openzeppelin-contracts"
 version = "5.4.0"
 url = "https://soldeer-revisions.s3.amazonaws.com/@openzeppelin-contracts/5_4_0_19-07-2025_08:59:41_contracts.zip"
