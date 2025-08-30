@@ -26,3 +26,11 @@ def test_default():
 	print(f"Vault deployed at: {vault}")
 	print(f"ERC20 token deployed at: {mock_token}")
 	print(f"Vault owner: {vault.owner()}")
+
+	mock_token.approve(vault.address, 10**18)
+	vault.deposit(10**18, chain.accounts[0].address)
+	assert vault.balanceOf(chain.accounts[0].address) == 10**18
+
+	vault.withdraw(10**18, chain.accounts[0].address, chain.accounts[0].address)
+	assert vault.balanceOf(chain.accounts[0].address) == 0
+	assert mock_token.balanceOf(chain.accounts[0].address) == 10**18
